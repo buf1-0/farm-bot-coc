@@ -10,7 +10,9 @@ class Configuration:
     REGION_PORCENTAJE: tuple = (1780, 825, 1890, 875)
 
     # --- Tiempos ---
-    TIEMPO_BATALLA: int = 30
+    TIEMPO_BATALLA: int = 30    # PARA RENDIRSE (POR SI QUEDA ESTANCADO)
+
+    # --- Numeros ---
     NUM_VALQUIRIAS: int = 40    # U OTRA TROPA
     NUM_HECHIZOS: int = 11
 
