@@ -8,10 +8,10 @@ from controller import EmulatorController
 from vision import VisionEngine
 
 class FarmingBot:
-    def __init__(self, config: Configuration, controller: EmulatorController, vision: VisionEngine):
+    def __init__(self, config: Configuration, controller: EmulatorController, vision_engine: VisionEngine):
         self.cfg = config
         self.ctrl = controller
-        self.vision = vision
+        self.vision = vision_engine
         self.ataques_totales = 0
 
     def buscar_batalla(self):
