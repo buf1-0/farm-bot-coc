@@ -38,17 +38,22 @@ class FarmingBot:
         tropas_total = self.cfg.NUM_TROPAS
         tropas_lado = int(tropas_total / 4)
 
+        # Obtenemos la lista de héroes ya calculada en Configuración
+        heroes_activos = self.cfg.KEYS_HEROES
+
         # ==========================================
         # FASE 1: SUR (Cámara Abajo)
         # ==========================================
         print(f"⬇️ ATACANDO SUR...")
 
-        # --- CAMBIO: TODOS LOS HÉROES JUNTOS EN LA ESQUINA ABAJO ---
-        print("🤴 Tirando TODOS los Héroes abajo...")
-        for heroe in self.cfg.KEYS_HEROES:
-            self.ctrl.pulsar(heroe)
-            # Usamos la coordenada exacta de la esquina de abajo
-            self.ctrl.clic_en_punto(self.ctrl.cam_low_abajo)
+        if heroes_activos:
+            print(f"🤴 Tirando {len(heroes_activos)} Héroes abajo...")
+            for heroe in self.cfg.KEYS_HEROES:
+                self.ctrl.pulsar(heroe)
+                # Usamos la coordenada exacta de la esquina de abajo
+                self.ctrl.clic_en_punto(self.ctrl.cam_low_abajo)
+        else:
+            print("🤴 Sin Héroes (Modo Farming puro)...")
 
         # 2. Valquirias Sur
         self.ctrl.pulsar(self.cfg.KEY_VALQUIRIAS)
@@ -64,18 +69,20 @@ class FarmingBot:
             time.sleep(0.08)
 
         # ==========================================
-        # FASE 2: MOVIMIENTO CÁMARA
+        # FASE 2: NORTE (Cámara Arriba)
         # ==========================================
         self.ctrl.mover_camara_norte()  # Sube a tope arriba-izquierda
-
-        # ==========================================
-        # FASE 3: NORTE (Cámara Arriba)
-        # ==========================================
         print(f"⬆️ ATACANDO NORTE...")
+
+        if self.cfg.X_SIEGE_MACHINE and self.cfg.KEY_SIEGE_MACHINE:
+            print(f"🚜 Tirando Máquina de Asedio ({self.cfg.KEY_SIEGE_MACHINE})...")
+            self.ctrl.pulsar(self.cfg.KEY_SIEGE_MACHINE)
+            time.sleep(0.1)
+            self.ctrl.clic_en_punto(self.ctrl.cam_high_arriba)
 
         # Volver a pulsar la tecla de tropa tras mover cámara
         self.ctrl.pulsar(self.cfg.KEY_VALQUIRIAS)
-        time.sleep(0.3)
+        time.sleep(0.1)
 
         # Lado Izq-Arriba
         for _ in range(tropas_lado):
@@ -89,7 +96,7 @@ class FarmingBot:
             time.sleep(0.08)
 
         # ==========================================
-        # FASE 4: REMATE
+        # FASE 3: REMATE
         # ==========================================
         print("✨ Hechizos...")
         self.ctrl.pulsar(self.cfg.KEY_HECHIZOS)
