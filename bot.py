@@ -56,7 +56,7 @@ class FarmingBot:
             print("🤴 Sin Héroes (Modo Farming puro)...")
 
         # 2. Valquirias Sur
-        self.ctrl.pulsar(self.cfg.KEY_VALQUIRIAS)
+        self.ctrl.pulsar(self.cfg.KEY_TROPAS)
         time.sleep(0.1)
 
         # Lado Izq-Abajo
@@ -81,7 +81,7 @@ class FarmingBot:
             self.ctrl.clic_en_punto(self.ctrl.cam_high_arriba)
 
         # Volver a pulsar la tecla de tropa tras mover cámara
-        self.ctrl.pulsar(self.cfg.KEY_VALQUIRIAS)
+        self.ctrl.pulsar(self.cfg.KEY_TROPAS)
         time.sleep(0.1)
 
         # Lado Izq-Arriba

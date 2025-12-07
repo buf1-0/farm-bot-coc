@@ -18,7 +18,7 @@ class Configuration:
     NUM_HECHIZOS: int = 11          # NUMERO DE HECHIZOS EN TU EJERCITO ( ! UTILIZA UN UNICO HECHIZO ¡ )
 
     NUM_HEROES: int = 4             # CAMBIALO
-    X_SIEGE_MACHINE:bool = False    # CAMBIALO
+    X_SIEGE_MACHINE:bool = True    # CAMBIALO
 
     # --- Teclas Fijas ---
     KEY_ATACAR: str = '1'
@@ -31,7 +31,7 @@ class Configuration:
 
     KEY_UNZOOM: str = 'f3'          # Tecla para quitar zoom
 
-    KEY_VALQUIRIAS: str = 'a'
+    KEY_TROPAS: str = 'a'
 
     # --- Teclas Variables ---
     KEY_SIEGE_MACHINE: str = field(init=False)  # ⚠ NO TOCAR ⚠
@@ -60,6 +60,7 @@ class Configuration:
 
         # DEBUG
         print(f"⚙️ Configuración dinámica:")
+        print(f"   - Tropa: {self.KEY_TROPAS}")
         print(f"   - Máquina de Asedio: {self.KEY_SIEGE_MACHINE}")
         print(f"   - Héroes: {self.KEYS_HEROES}")
         print(f"   - Hechizos: {self.KEY_HECHIZOS}")
