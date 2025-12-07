@@ -80,8 +80,8 @@ class EmulatorController:
 
     # --- EXTRAS ---
     def clic_camino_al_centro(self):
-        x = int(960 + random.randint(-150, 150))    # 50
-        y = int(540 + random.randint(-150, 150))    # 50
+        x = int(960 + random.randint(-150, 150))
+        y = int(540 + random.randint(-150, 150))
         pyautogui.click(x, y)
         time.sleep(0.08)
 

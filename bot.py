@@ -1,11 +1,17 @@
 import time
+
+import pyautogui
+pyautogui.FAILSAFE = True
+
 from configuration import Configuration
 from controller import EmulatorController
+from vision import VisionEngine
 
 class FarmingBot:
-    def __init__(self, config: Configuration, controller: EmulatorController):
+    def __init__(self, config: Configuration, controller: EmulatorController, vision: VisionEngine):
         self.cfg = config
         self.ctrl = controller
+        self.vision = vision
         self.ataques_totales = 0
 
     def buscar_batalla(self):
@@ -101,11 +107,12 @@ class FarmingBot:
         while True:
 
             if (time.time() - start) > self.cfg.TIEMPO_BATALLA:
-                print("⏰ Tiempo.")
+                print(f"⏰ Tiempo límite {self.cfg.TIEMPO_BATALLA} alcanzado. Rindiéndose")
                 self.rendirse()
                 break
 
-            lectura, _ = self.ctrl.leer_porcentaje(self.cfg.REGION_PORCENTAJE)
+            lectura = self.vision.leer_porcentaje()
+
             if lectura > max_porcentaje:
                 max_porcentaje = lectura
                 print(f"   --> 📈 {max_porcentaje}%")
@@ -115,7 +122,7 @@ class FarmingBot:
                 self.rendirse()
                 break
 
-            if self.ctrl.detectar_boton_fin():
+            if self.vision.detectar_boton_fin():
                 print("💀 FIN.")
                 self.volver_casa_directo()
                 break
@@ -151,3 +158,16 @@ class FarmingBot:
                 time.sleep(1)
             except KeyboardInterrupt:
                 break
+
+if __name__ == "__main__":
+    # Inicialización de Clases
+    configuracion = Configuration()
+    controlador = EmulatorController()
+    vision = VisionEngine(configuracion)
+
+    # El bot recibe las tres dependencias
+    bot = FarmingBot(configuracion, controlador, vision)
+
+    # Ejecución
+    print("--- Iniciando bot ---")
+    bot.ejecutar_ciclo()

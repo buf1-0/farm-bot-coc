@@ -1,0 +1,51 @@
+import pyautogui
+import pytesseract
+import cv2
+import numpy as np
+import os
+from configuration import Configuration
+
+
+class VisionEngine:
+    def __init__(self, config: Configuration):
+        pytesseract.pytesseract.tesseract_cmd = config.RUTA_TESSERACT
+        self.cfg = config
+
+    def leer_porcentaje(self):
+        """Captura la región, preprocesa con CV2 y lee el porcentaje."""
+        try:
+            img = pyautogui.screenshot(region=self.cfg.REGION_PORCENTAJE)
+            img_np = np.array(img)
+
+            # 1. Convertir a Gris
+            img_gray = cv2.cvtColor(img_np, cv2.COLOR_RGB2GRAY)
+
+            # 2. Binarización (Umbral) para estabilizar el OCR
+            _, img_thresh = cv2.threshold(img_gray, 180, 255, cv2.THRESH_BINARY)
+
+            # 3. Aumentar escala
+            img_final = cv2.resize(img_thresh, None, fx=2, fy=2, interpolation=cv2.INTER_LINEAR)
+
+            # 4. Leer con Tesseract
+            texto = pytesseract.image_to_string(img_final, config='--psm 7 outputbase digits')
+
+            texto_limpio = ''.join(filter(str.isdigit, texto))
+            if texto_limpio:
+                valor = int(texto_limpio)
+                if valor > 100: return 0
+                return valor
+        except Exception as e:
+            # print(f"Error OCR: {e}")
+            pass
+        return 0
+
+    def detectar_boton_fin(self):
+        """Busca la imagen del botón de fin de batalla en pantalla."""
+        archivo = os.path.join(self.cfg.RUTA_IMG, 'fin_batalla.png')
+        try:
+            # Si se encuentra el botón de fin/volver, devuelve True
+            if pyautogui.locateOnScreen(archivo, confidence=0.8, grayscale=True):
+                return True
+        except:
+            pass
+        return False
