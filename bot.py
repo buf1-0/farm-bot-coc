@@ -29,8 +29,8 @@ class FarmingBot:
 
         print("⚔️ ESTRATEGIA: CUADRADO (Héroes Juntos Abajo)")
 
-        tropa_total = self.cfg.NUM_TROPA
-        tropa_lado = int(tropa_total / 4)
+        tropas_total = self.cfg.NUM_TROPAS
+        tropas_lado = int(tropas_total / 4)
 
         # ==========================================
         # FASE 1: SUR (Cámara Abajo)
@@ -49,11 +49,11 @@ class FarmingBot:
         time.sleep(0.1)
 
         # Lado Izq-Abajo
-        for _ in range(tropa_lado):
+        for _ in range(tropas_lado):
             self.ctrl.lado_abajo_izq()
             time.sleep(0.08)
         # Lado Abajo-Der
-        for _ in range(tropa_lado):
+        for _ in range(tropas_lado):
             self.ctrl.lado_abajo_der()
             time.sleep(0.08)
 
@@ -72,12 +72,12 @@ class FarmingBot:
         time.sleep(0.3)
 
         # Lado Izq-Arriba
-        for _ in range(tropa_lado):
+        for _ in range(tropas_lado):
             self.ctrl.lado_arriba_izq()
             time.sleep(0.08)
 
         # Lado Arriba-Der (y el resto)
-        resto = tropa_total - (tropa_lado * 3)
+        resto = tropas_total - (tropas_lado * 3)
         for _ in range(resto):
             self.ctrl.lado_arriba_der()
             time.sleep(0.08)

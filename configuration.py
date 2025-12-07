@@ -13,7 +13,7 @@ class Configuration:
     TIEMPO_BATALLA: int = 30    # PARA RENDIRSE (POR SI QUEDA ESTANCADO)
 
     # --- Numeros ---
-    NUM_TROPA: int = 40    # U OTRA TROPA
+    NUM_TROPAS: int = 40    # U OTRA TROPA
     NUM_HECHIZOS: int = 11
 
     # --- Teclas ---
