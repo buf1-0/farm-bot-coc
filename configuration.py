@@ -10,10 +10,10 @@ class Configuration:
     REGION_PORCENTAJE: tuple = (1780, 825, 1890, 875)
 
     # --- Tiempos ---
-    TIEMPO_BATALLA: int = 30    # PARA RENDIRSE ( POR SI QUEDA ESTANCADO )
+    TIEMPO_BATALLA: int = 30        # PARA RENDIRSE ( POR SI QUEDA ESTANCADO )
 
     # --- Numeros ---
-    NUM_TROPAS: int = 40    # NUMERO DE TROPAS EN TU EJERCITO ( ! UTILIZA UNA UNICA TROPA ¡ )
+    NUM_TROPAS: int = 40            # NUMERO DE TROPAS EN TU EJERCITO ( ! UTILIZA UNA UNICA TROPA ¡ )
     NUM_HECHIZOS: int = 11
 
     # --- Teclas ---
@@ -24,7 +24,7 @@ class Configuration:
     KEY_CONFIRMAR: str = '5'
     KEY_VOLVER: str = '6'
 
-    KEY_UNZOOM: str = 'f3'  # Tecla para quitar zoom
+    KEY_UNZOOM: str = 'f3'          # Tecla para quitar zoom
 
     # --- Tropas ---
     KEY_VALQUIRIAS: str = 'a'
