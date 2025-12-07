@@ -11,12 +11,28 @@ class Configuration:
 
     TIEMPO_BATALLA: int = 30  # 30s para rendirse ( si no llega antes al 50% )
 
+    LIMITE_ORO: int = 20000000
+    LIMITE_ELIXIR: int = 20000000
+
     # --- RUTAS ---
     RUTA_TESSERACT: str = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
     RUTA_IMG: str = 'img/'
 
     # --- ZONA OCR ---
-    REGION_PORCENTAJE: tuple = (1780, 825, 1890, 875)   # OBLIGATORIO USAR PANTALLA COMPLETA
+    REGION_PORCENTAJE: tuple = (1780, 825, 1890, 875)
+    REGION_ORO: tuple = (1780, 825, 1890, 875)
+    REGION_ELIXIR: tuple = (1780, 825, 1890, 875)
+
+    # --- LISTA DE MUROS (Ordenados por prioridad de mejora) ---
+    # El bot buscará primero el 13, si no hay, busca el 14, etc.
+    LISTA_MUROS: List[str] = field(default_factory=lambda: [
+        'muro_13.png',
+        'muro_14.png',
+        'muro_15.png',
+        'muro_16.png',
+        'muro_17.png',
+        'muro_18.png'
+    ])
 
     # --- Teclas Fijas ---
     KEY_ATACAR: str = '1'
@@ -32,9 +48,9 @@ class Configuration:
     KEY_TROPAS: str = 'a'
 
     # --- Teclas Variables ---
-    KEY_SIEGE_MACHINE: str = field(init=False)  # ⚠ NO TOCAR ⚠
-    KEY_HECHIZOS: str = field(init=False)       # ⚠ NO TOCAR ⚠
-    KEYS_HEROES: List[str] = field(init=False)  # ⚠ NO TOCAR ⚠
+    KEY_SIEGE_MACHINE: str = field(init=False)
+    KEY_HECHIZOS: str = field(init=False)
+    KEYS_HEROES: List[str] = field(init=False)
 
     def __post_init__(self):
         # Fila de teclas disponibles después de la 'A'
@@ -57,8 +73,8 @@ class Configuration:
         self.KEY_HECHIZOS = fila_teclas[idx]
 
         # DEBUG
-        print(f"⚙️ Configuración dinámica:")
-        print(f"   - Tropa: {self.KEY_TROPAS}")
-        print(f"   - Máquina de Asedio: {self.KEY_SIEGE_MACHINE}")
-        print(f"   - Héroes: {self.KEYS_HEROES}")
-        print(f"   - Hechizos: {self.KEY_HECHIZOS}")
+        #print(f"⚙️ Configuración dinámica:")
+        #print(f"   - Tropa: {self.KEY_TROPAS}")
+        #print(f"   - Máquina de Asedio: {self.KEY_SIEGE_MACHINE}")
+        #print(f"   - Héroes: {self.KEYS_HEROES}")
+        #print(f"   - Hechizos: {self.KEY_HECHIZOS}")
