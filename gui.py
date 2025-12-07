@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import threading
+import pyautogui  # Necesario para detectar la excepción de Failsafe
 from configuration import Configuration
 from controller import EmulatorController
 from vision import VisionEngine
@@ -10,43 +11,46 @@ from bot import FarmingBot
 class BotGUI:
     def __init__(self, root):
         self.root = root
-        self.root.title("Clash Bot Launcher 🚜")
-        self.root.geometry("350x450")
+        self.root.title("Farm Bot Launcher")
+        self.root.geometry("350x480")
+
+        try:
+            root.iconbitmap("icono.ico")  # Debe estar junto al exe
+        except:
+            pass
 
         # --- CONFIGURACIÓN DE COLORES (MODO OSCURO) ---
-        bg_color = "#2b2b2b"
-        fg_color = "#ffffff"
-        accent_color = "#4CAF50"  # Verde bonito
-        warning_color = "#FF5722"  # Naranja alerta
+        self.bg_color = "#2b2b2b"
+        self.fg_color = "#ffffff"
+        self.warning_color = "#FF5722"
 
-        self.root.configure(bg=bg_color)
+        self.root.configure(bg=self.bg_color)
 
-        # Configurar Estilos (Usamos el tema 'clam' para tener control de colores)
+        # Configurar Estilos
         style = ttk.Style()
         style.theme_use('clam')
 
-        # Estilo Genérico
-        style.configure("TFrame", background=bg_color)
-        style.configure("TLabel", background=bg_color, foreground=fg_color, font=("Segoe UI", 10))
+        style.configure("TFrame", background=self.bg_color)
+        style.configure("TLabel", background=self.bg_color, foreground=self.fg_color, font=("Segoe UI", 10))
         style.configure("Header.TLabel", font=("Segoe UI", 14, "bold"), foreground="#4db6ac")
-        style.configure("Warning.TLabel", font=("Segoe UI", 9, "bold"), foreground=warning_color)
+        style.configure("Warning.TLabel", font=("Segoe UI", 9, "bold"), foreground=self.warning_color)
         style.configure("Small.TLabel", font=("Segoe UI", 8), foreground="#aaaaaa")
 
-        # Estilo Botones
+        # Botones
         style.configure("TButton",
                         font=("Segoe UI", 10, "bold"),
                         background="#404040",
                         foreground="white",
                         borderwidth=1,
                         focuscolor="none")
-        style.map("TButton", background=[('active', '#505050')])  # Efecto Hover
+        style.map("TButton", background=[('active', '#505050'), ('disabled', '#2b2b2b')])
 
-        # Estilo Checkbutton
-        style.configure("TCheckbutton", background=bg_color, foreground=fg_color, font=("Segoe UI", 10))
-        style.map("TCheckbutton", background=[('active', bg_color)])
+        # Checkbutton
+        style.configure("TCheckbutton", background=self.bg_color, foreground=self.fg_color, font=("Segoe UI", 10))
+        style.map("TCheckbutton", background=[('active', self.bg_color)])
 
-        # --- VARIABLE DE CONTROL ---
         self.bot_instance = None
+        self.is_running = False
 
         # --- INTERFAZ ---
         main_frame = ttk.Frame(root)
@@ -73,7 +77,7 @@ class BotGUI:
         self.chk_siege.pack(pady=15, anchor="w")
 
         # 4. Botón de Inicio
-        self.btn_start = ttk.Button(main_frame, text="🔥 INICIAR BOT 🔥", command=self.start_bot)
+        self.btn_start = ttk.Button(main_frame, text="INICIAR BOT", command=self.start_bot)
         self.btn_start.pack(pady=20, fill="x", ipady=5)
 
         # 5. Estado
@@ -83,26 +87,26 @@ class BotGUI:
         # Separador
         ttk.Separator(main_frame, orient='horizontal').pack(fill='x', pady=15)
 
-        # 6. INFO DE SEGURIDAD (FAILSAFE)
+        # 6. INFO DE SEGURIDAD
         lbl_failsafe = ttk.Label(main_frame,
-                                 text="🚨 PARADA DE EMERGENCIA 🚨\nMueve el ratón bruscamente a una\nesquina de la pantalla para parar.",
+                                 text="PARADA DE EMERGENCIA\nMueve el ratón bruscamente a una\nesquina de la pantalla para parar.",
                                  style="Warning.TLabel",
                                  justify="center")
         lbl_failsafe.pack(pady=5)
 
-        # Nota final
-        lbl_note = ttk.Label(main_frame, text="Cierra esta ventana para salir totalmente.", style="Small.TLabel")
+        lbl_note = ttk.Label(main_frame, text="Si el bot se para, podrás reiniciar aquí.", style="Small.TLabel")
         lbl_note.pack(side="bottom", pady=(10, 0))
 
     def start_bot(self):
-        # Bloquear UI
-        self.btn_start.config(state="disabled")
-        self.combo_heroes.config(state="disabled")
-        self.chk_siege.config(state="disabled")
+        if self.is_running:
+            return
 
+        # 1. Bloquear UI
+        self.toggle_inputs(enable=False)
         self.lbl_status.config(text="Estado: 🚀 EJECUTANDO...", foreground="#4CAF50")  # Verde
+        self.is_running = True
 
-        # Recoger datos
+        # 2. Recoger datos
         try:
             num_heroes = int(self.combo_heroes.get())
         except ValueError:
@@ -110,13 +114,13 @@ class BotGUI:
 
         usar_asedio = self.siege_var.get()
 
-        # Inyectar Configuración
+        # 3. Configuración
         config = Configuration()
         config.NUM_HEROES = num_heroes
         config.X_SIEGE_MACHINE = usar_asedio
         config.__post_init__()
 
-        # Iniciar Bot en Hilo
+        # 4. Iniciar Hilo
         try:
             controller = EmulatorController()
             vision = VisionEngine(config)
@@ -126,19 +130,47 @@ class BotGUI:
             t.daemon = True
             t.start()
         except Exception as e:
-            self.lbl_status.config(text=f"Error: {e}", foreground="red")
-            self.btn_start.config(state="normal")
+            self.update_status(f"Error inic: {e}", is_error=True)
+            self.toggle_inputs(enable=True)
 
     def run_bot_logic(self):
+        # Esta función corre en un hilo secundario.
         try:
             self.bot_instance.ejecutar_ciclo()
+        except pyautogui.FailSafeException:
+            # Detectamos la parada de emergencia
+            self.root.after(0, lambda: self.update_status("🛑 DETENIDO POR EMERGENCIA", is_error=True))
         except Exception as e:
-            print(f"Bot detenido: {e}")
+            # Detectamos cualquier otro error
+            self.root.after(0, lambda: self.update_status(f"❌ Error: {e}", is_error=True))
+        finally:
+            # Siempre reactivamos los botones al final
+            self.root.after(0, lambda: self.toggle_inputs(enable=True))
+            self.is_running = False
+
+    def update_status(self, text, is_error=False):
+        # Actualiza el texto de estado de forma segura.
+        color = self.warning_color if is_error else "#aaaaaa"
+        self.lbl_status.config(text=f"Estado: {text}", foreground=color)
+
+    def toggle_inputs(self, enable):
+        # Habilita o deshabilita los controles.
+        state = "normal" if enable else "disabled"
+        # Combobox usa "readonly" para habilitado, "disabled" para deshabilitado
+        combo_state = "readonly" if enable else "disabled"
+
+        self.btn_start.config(state=state)
+        self.chk_siege.config(state=state)
+        self.combo_heroes.config(state=combo_state)
+
+        if enable:
+            self.btn_start.config(text="INICIAR BOT")
+        else:
+            self.btn_start.config(text="⏳ BOT CORRIENDO...")
 
 
 if __name__ == "__main__":
     root = tk.Tk()
-    # Centrar ventana
     w, h = 350, 480
     ws = root.winfo_screenwidth()
     hs = root.winfo_screenheight()

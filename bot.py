@@ -19,8 +19,9 @@ class FarmingBot:
         self.ctrl.pulsar(self.cfg.KEY_ATACAR, 0.5)
         self.ctrl.pulsar(self.cfg.KEY_MODO_NORMAL, 0.5)
         self.ctrl.pulsar(self.cfg.KEY_BUSCAR, 0.5)
-        print("☁️ Esperando nubes (5s)...")
-        time.sleep(5)
+
+        print("☁️ Esperando nubes (Dinámico)...")
+        encontrado = self.vision.esperar_fin_nubes()
 
     def desplegar_ejercito(self):
         # ==========================================

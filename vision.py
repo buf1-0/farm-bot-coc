@@ -3,6 +3,7 @@ import pytesseract
 import cv2
 import numpy as np
 import os
+import time
 from configuration import Configuration
 
 
@@ -49,3 +50,22 @@ class VisionEngine:
         except:
             pass
         return False
+
+    def esperar_fin_nubes(self):
+        """
+        Espera INFINITAMENTE hasta que desaparezcan las nubes.
+        Bloquea el programa hasta que encuentra la imagen.
+        """
+        archivo = os.path.join(self.cfg.RUTA_IMG, 'terminar_batalla.png')
+
+        # print("☁️ Esperando aldea (Modo Infinito)...")
+
+        while True:
+            try:
+                # Si lo encuentra, rompe el bucle y devuelve True inmediatamente
+                if pyautogui.locateOnScreen(archivo, confidence=0.8, grayscale=True):
+                    return True
+            except:
+                pass
+
+            time.sleep(0.5)  # Comprueba cada 0.5 segundos para no freír la CPU
