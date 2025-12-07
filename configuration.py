@@ -20,6 +20,7 @@ class Configuration:
     KEY_ATACAR: str = '1'
     KEY_MODO_NORMAL: str = '2'
     KEY_BUSCAR: str = '3'
+
     KEY_RENDIRSE: str = '4'
     KEY_CONFIRMAR: str = '5'
     KEY_VOLVER: str = '6'
