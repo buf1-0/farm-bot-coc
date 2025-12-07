@@ -13,7 +13,7 @@ class EmulatorController:
     def __init__(self):
         # FASE 1: CÁMARA ABAJO IZQUIERDA
         self.cam_low_izq = (170, 270)
-        self.cam_low_abajo = (950, 860) # Aquí irán los héroes
+        self.cam_low_abajo = (950, 860)     # Aquí irán los héroes
         self.cam_low_der = (1780, 290)
 
         # FASE 2: CÁMARA ARRIBA IZQUIERDA
@@ -104,7 +104,7 @@ class EmulatorController:
                 if valor > 100: return 0, texto_limpio
                 return valor, texto_limpio
         except Exception as e:
-            # print(f"Error OCR: {e}") # Para debug
+            # print(f"Error OCR: {e}") # debug
             pass
         return 0, ""
 
