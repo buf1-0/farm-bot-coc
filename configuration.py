@@ -5,6 +5,7 @@ from typing import List
 class Configuration:
     # --- RUTAS ---
     RUTA_TESSERACT: str = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+    RUTA_IMG: str = 'img/'
 
     # --- ZONA OCR ---
     REGION_PORCENTAJE: tuple = (1780, 825, 1890, 875)

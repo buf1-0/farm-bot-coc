@@ -40,7 +40,7 @@ class VisionEngine:
         return 0
 
     def detectar_boton_fin(self):
-        """Busca la imagen del botón de fin de batalla en pantalla."""
+        # Busca la imagen del botón de fin de batalla en pantalla.
         archivo = os.path.join(self.cfg.RUTA_IMG, 'fin_batalla.png')
         try:
             # Si se encuentra el botón de fin/volver, devuelve True
