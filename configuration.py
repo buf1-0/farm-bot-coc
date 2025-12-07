@@ -10,7 +10,7 @@ class Configuration:
     REGION_PORCENTAJE: tuple = (1780, 825, 1890, 875)
 
     # --- Tiempos ---
-    TIEMPO_BATALLA: int = 30    # PARA RENDIRSE (POR SI QUEDA ESTANCADO)
+    TIEMPO_BATALLA: int = 30    # PARA RENDIRSE ( POR SI QUEDA ESTANCADO )
 
     # --- Numeros ---
     NUM_TROPAS: int = 40    # NUMERO DE TROPAS EN TU EJERCITO ( ! UTILIZA UNA UNICA TROPA ¡ )
