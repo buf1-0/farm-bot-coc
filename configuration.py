@@ -14,7 +14,7 @@ class Configuration:
 
     # --- Numeros ---
     NUM_TROPAS: int = 40            # NUMERO DE TROPAS EN TU EJERCITO ( ! UTILIZA UNA UNICA TROPA ¡ )
-    NUM_HECHIZOS: int = 11
+    NUM_HECHIZOS: int = 11          # NUMERO DE HECHIZOS EN TU EJERCITO ( ! UTILIZA UN UNICO HECHIZO ¡ )
 
     # --- Teclas ---
     KEY_ATACAR: str = '1'
