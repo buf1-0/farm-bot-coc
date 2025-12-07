@@ -1,13 +1,6 @@
 import pyautogui
 import time
 import random
-import pytesseract
-import cv2
-import numpy as np
-import os
-
-# Ajusta la ruta si es diferente en tu PC
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 class EmulatorController:
     def __init__(self):
@@ -84,34 +77,3 @@ class EmulatorController:
         y = int(540 + random.randint(-150, 150))
         pyautogui.click(x, y)
         time.sleep(0.08)
-
-    def leer_porcentaje(self, region):
-        try:
-            img = pyautogui.screenshot(region=region)
-            img_np = np.array(img)
-
-            img_gray = cv2.cvtColor(img_np, cv2.COLOR_RGB2GRAY)
-
-            _, img_thresh = cv2.threshold(img_gray, 180, 255, cv2.THRESH_BINARY)
-
-            img_final = cv2.resize(img_thresh, None, fx=2, fy=2, interpolation=cv2.INTER_LINEAR)
-
-            texto = pytesseract.image_to_string(img_final, config='--psm 7 outputbase digits')
-
-            texto_limpio = ''.join(filter(str.isdigit, texto))
-            if texto_limpio:
-                valor = int(texto_limpio)
-                if valor > 100: return 0, texto_limpio
-                return valor, texto_limpio
-        except Exception as e:
-            # print(f"Error OCR: {e}") # debug
-            pass
-        return 0, ""
-
-    def detectar_boton_fin(self):
-        archivo = os.path.join(self.ruta_img, 'fin_batalla.png')
-        try:
-            if pyautogui.locateOnScreen(archivo, confidence=0.8, grayscale=True): return True
-        except:
-            pass
-        return False
