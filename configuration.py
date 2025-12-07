@@ -3,22 +3,20 @@ from typing import List
 
 @dataclass
 class Configuration:
+    # --- OPCIONES ---
+    NUM_TROPAS: int = 40
+    NUM_HECHIZOS: int = 11
+    NUM_HEROES: int = 4
+    X_SIEGE_MACHINE: bool = True
+
+    TIEMPO_BATALLA: int = 30  # 30s para rendirse ( si no llega antes al 50% )
+
     # --- RUTAS ---
     RUTA_TESSERACT: str = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
     RUTA_IMG: str = 'img/'
 
     # --- ZONA OCR ---
-    REGION_PORCENTAJE: tuple = (1780, 825, 1890, 875)
-
-    # --- Tiempos ---
-    TIEMPO_BATALLA: int = 30        # 30s para rendirse ( si no llega antes al 50% )
-
-    # --- Numeros ---
-    NUM_TROPAS: int = 40            # NUMERO DE TROPAS EN TU EJERCITO ( ! UTILIZA UNA UNICA TROPA ¡ )
-    NUM_HECHIZOS: int = 11          # NUMERO DE HECHIZOS EN TU EJERCITO ( ! UTILIZA UN UNICO HECHIZO ¡ )
-
-    NUM_HEROES: int = 4             # CAMBIALO
-    X_SIEGE_MACHINE:bool = True    # CAMBIALO
+    REGION_PORCENTAJE: tuple = (1780, 825, 1890, 875)   # OBLIGATORIO USAR PANTALLA COMPLETA
 
     # --- Teclas Fijas ---
     KEY_ATACAR: str = '1'
