@@ -5,20 +5,20 @@ import random
 class EmulatorController:
     def __init__(self):
         # FASE 1: CÁMARA ABAJO IZQUIERDA
-        self.cam_low_izq = (170, 270)
-        self.cam_low_abajo = (950, 860)     # Aquí irán los héroes
-        self.cam_low_der = (1780, 290)
+        self.cam_low_izq = (170, 290)
+        self.cam_low_abajo = (950, 875)     # Aquí irán los héroes
+        self.cam_low_der = (1740, 280)
 
         # FASE 2: CÁMARA ARRIBA IZQUIERDA
-        self.cam_high_izq = (160, 680)
+        self.cam_high_izq = (220, 650)
         self.cam_high_arriba = (960, 100)
-        self.cam_high_der = (1690, 660)
+        self.cam_high_der = (1730, 670)
 
         self.centro_pantalla_x = 960
         self.centro_pantalla_y = 540
         self.ruta_img = 'img/'
 
-    def pulsar(self, tecla, espera=0.1):
+    def pulsar(self, tecla, espera=0.08):
         pyautogui.press(tecla)
         time.sleep(espera)
 
