@@ -22,7 +22,7 @@ class Configuration:
     TIEMPO_BATALLA: int = 30
 
     # --- OPCIONES ---
-    NUM_TROPAS: int = 37
+    NUM_TROPAS: int = 40
     NUM_HECHIZOS: int = 11
     NUM_HEROES: int = 4
     X_SIEGE_MACHINE: bool = True
