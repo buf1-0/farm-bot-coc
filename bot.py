@@ -192,7 +192,7 @@ class FarmingBot:
             # Aquí asumimos que el botón '5' cae encima del Oro o Elixir
             self.ctrl.pulsar('5', espera=0.2)
             print("   --> ¡Combo ejecutado! 🧱💥")
-            # Actualizamos recursos "a ojo" para no leer OCR todo el rato y perder tiempo
+            # Actualizamos recursos "a ojo"
             # Restamos 1 millón (ajusta esto al coste real de tus muros)
             if sobra_elixir:
                 elixir -= 1000000
@@ -237,11 +237,9 @@ if __name__ == "__main__":
     # El bot recibe las tres dependencias
     bot = FarmingBot(configuracion, controlador, vision)
 
-    # Ejecución con CAPTURA DE ERRORES
+    # Ejecución
     print("--- Iniciando bot ---")
     try:
         bot.ejecutar_ciclo()
     except pyautogui.FailSafeException:
-        print("\n🛑 BOT DETENIDO: Has llevado el ratón a la esquina (Parada de Emergencia).")
-    except KeyboardInterrupt:
-        print("\n👋 BOT DETENIDO: Interrupción por teclado (Ctrl+C).")
+        print("\n🛑 BOT DETENIDO: Parada de Emergencia (Ratón en esquina).")
