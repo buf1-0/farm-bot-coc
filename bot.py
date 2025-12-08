@@ -1,5 +1,4 @@
 import time
-
 import pyautogui
 pyautogui.FAILSAFE = True
 
@@ -150,6 +149,62 @@ class FarmingBot:
         print("🏠 Casa (Directo)...")
         self.ctrl.pulsar(self.cfg.KEY_VOLVER, 1.0)
 
+    # --- LÓGICA DE MUROS: MACRO RÁPIDO ---
+    def gestionar_muros(self):
+        if not self.cfg.AUTO_UPGRADE_WALLS:
+            return
+        print("💰 Comprobando almacenes (OCR)...")
+        oro, elixir = self.vision.leer_recursos()
+        print(f"   Oro: {oro:,} | Elixir: {elixir:,}")
+        sobra_oro = oro >= self.cfg.MIN_ORO_PARA_MUROS
+        sobra_elixir = elixir >= self.cfg.MIN_ELIXIR_PARA_MUROS
+        if not sobra_oro and not sobra_elixir:
+            print("   --> No hay suficiente pasta. A farmear.")
+            return
+        print("🧱 Buscando muros (Macro: Muro -> 6(x16) -> 7 -> 5)...")
+        intentos = 0
+        # Mientras tengamos recursos y no hayamos probado demasiadas veces
+        while (sobra_oro or sobra_elixir) and intentos < 8:
+            muro_encontrado = None
+            # Buscar muro de la lista
+            for nombre_muro in self.cfg.LISTA_MUROS:
+                pos = self.vision.buscar_imagen(nombre_muro, confianza=0.65)
+                if pos:
+                    print(f"   --> Muro detectado: {nombre_muro}")
+                    muro_encontrado = pos
+                    break
+            if not muro_encontrado:
+                print("   --> No veo muros mejorables.")
+                break
+            # --- TU SECUENCIA DE COMBO ---
+            # 1. Clic Muro
+            self.ctrl.clic_en_punto(muro_encontrado)
+            time.sleep(0.1)
+            # 2. Clic 6 (Seleccionar Fila)
+            self.ctrl.pulsar('6', espera=0.05)
+            # 3. Clic 6 x15 veces (Spam para seleccionar toda la fila)
+            # Esto es lo que pediste: spamear la tecla 6
+            for _ in range(15):
+                self.ctrl.pulsar('6', espera=0.02)  # Muy rápido
+            # 4. Clic 7 (Botón Mejorar)
+            self.ctrl.pulsar('7', espera=0.1)
+            # 5. Clic 5 (Confirmar con recurso)
+            # Aquí asumimos que el botón '5' cae encima del Oro o Elixir
+            self.ctrl.pulsar('5', espera=0.2)
+            print("   --> ¡Combo ejecutado! 🧱💥")
+            # Actualizamos recursos "a ojo" para no leer OCR todo el rato y perder tiempo
+            # Restamos 1 millón (ajusta esto al coste real de tus muros)
+            if sobra_elixir:
+                elixir -= 1000000
+                if elixir < self.cfg.MIN_ELIXIR_PARA_MUROS: sobra_elixir = False
+            elif sobra_oro:
+                oro -= 1000000
+                if oro < self.cfg.MIN_ORO_PARA_MUROS: sobra_oro = False
+            # Clic neutro para limpiar selección
+            self.ctrl.pulsar(self.cfg.KEY_UNZOOM, 0.1)
+            intentos += 1
+            time.sleep(0.5)  # Esperar animación
+
     def ejecutar_ciclo(self):
         print("🚀 BOT CUADRADO V2 INICIADO.")
         print("Maximiza MEmu. 10 segundos.")
@@ -158,6 +213,9 @@ class FarmingBot:
         while True:
             try:
                 self.ataques_totales += 1
+
+                self.gestionar_muros()
+
                 print(f"--- ATAQUE {self.ataques_totales} ---")
                 self.buscar_batalla()
                 self.desplegar_ejercito()
@@ -166,6 +224,9 @@ class FarmingBot:
                 time.sleep(1)
             except KeyboardInterrupt:
                 break
+            except Exception as e:
+                print(f"⚠️ Error: {e}")
+                self.volver_casa_directo()
 
 if __name__ == "__main__":
     # Inicialización de Clases
@@ -176,6 +237,11 @@ if __name__ == "__main__":
     # El bot recibe las tres dependencias
     bot = FarmingBot(configuracion, controlador, vision)
 
-    # Ejecución
+    # Ejecución con CAPTURA DE ERRORES
     print("--- Iniciando bot ---")
-    bot.ejecutar_ciclo()
+    try:
+        bot.ejecutar_ciclo()
+    except pyautogui.FailSafeException:
+        print("\n🛑 BOT DETENIDO: Has llevado el ratón a la esquina (Parada de Emergencia).")
+    except KeyboardInterrupt:
+        print("\n👋 BOT DETENIDO: Interrupción por teclado (Ctrl+C).")
