@@ -11,18 +11,18 @@ class Configuration:
     REGION_PORCENTAJE: tuple = (1780, 825, 110, 50)
 
     # --- ZONA OCR (Recursos en la Aldea) ---
-    REGION_ORO: tuple = (1590, 45, 205, 30)
-    REGION_ELIXIR: tuple = (1595, 145, 207, 30)
+    REGION_ORO: tuple = (1590, 45, 220, 30)
+    REGION_ELIXIR: tuple = (1595, 145, 220, 30)
 
     # Cantidad mínima para empezar a gastar en muros
     LIMITE_ORO: int = 18000000
-    LIMITE_ELIXIR: int = 20000000
+    LIMITE_ELIXIR: int = 18000000
 
     # --- Tiempos ---
     TIEMPO_BATALLA: int = 30
 
     # --- OPCIONES ---
-    NUM_TROPAS: int = 40
+    NUM_TROPAS: int = 37
     NUM_HECHIZOS: int = 11
     NUM_HEROES: int = 4
     X_SIEGE_MACHINE: bool = True

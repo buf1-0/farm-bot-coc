@@ -18,8 +18,11 @@ class VisionEngine:
             img = pyautogui.screenshot(region=self.cfg.REGION_PORCENTAJE)
             img_np = np.array(img)
             img_gray = cv2.cvtColor(img_np, cv2.COLOR_RGB2GRAY)
+
             _, img_thresh = cv2.threshold(img_gray, 180, 255, cv2.THRESH_BINARY)
-            img_final = cv2.resize(img_thresh, None, fx=2, fy=2, interpolation=cv2.INTER_LINEAR)
+            img_inv = cv2.bitwise_not(img_thresh)
+            img_final = cv2.resize(img_inv, None, fx=2, fy=2, interpolation=cv2.INTER_LINEAR)
+
             texto = pytesseract.image_to_string(img_final, config='--psm 7 outputbase digits')
             texto_limpio = ''.join(filter(str.isdigit, texto))
             if texto_limpio:
@@ -62,11 +65,21 @@ class VisionEngine:
         try:
             img = pyautogui.screenshot(region=region)
             img_np = np.array(img)
-            img_gray = cv2.cvtColor(img_np, cv2.COLOR_RGB2GRAY)
 
-            _, img_thresh = cv2.threshold(img_gray, 200, 255, cv2.THRESH_BINARY)
-            img_inv = cv2.bitwise_not(img_thresh)
-            img_final = cv2.resize(img_inv, None, fx=3, fy=3, interpolation=cv2.INTER_LINEAR)
+            hsv = cv2.cvtColor(img_np, cv2.COLOR_RGB2HSV)
+
+            lower_white = np.array([0, 0, 180])
+            upper_white = np.array([180, 15, 255])
+
+            mask = cv2.inRange(hsv, lower_white, upper_white)
+
+            kernel = np.ones((2, 2), np.uint8)
+            mask_clean = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+
+            mask_inv = cv2.bitwise_not(mask_clean)
+            img_final = cv2.resize(mask_inv, None, fx=3, fy=3, interpolation=cv2.INTER_LINEAR)
+
+            img_final = cv2.copyMakeBorder(img_final, 10, 10, 10, 10, cv2.BORDER_CONSTANT, value=255)
 
             config = '--psm 7 -c tessedit_char_whitelist=0123456789'
             texto = pytesseract.image_to_string(img_final, config=config)

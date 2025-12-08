@@ -15,9 +15,9 @@ class FarmingBot:
 
     def buscar_batalla(self):
         print("\n🔎 Buscando...")
-        self.ctrl.pulsar(self.cfg.KEY_ATACAR, 0.5)
-        self.ctrl.pulsar(self.cfg.KEY_MODO_NORMAL, 0.5)
-        self.ctrl.pulsar(self.cfg.KEY_BUSCAR, 0.5)
+        self.ctrl.pulsar(self.cfg.KEY_ATACAR, 0.75)
+        self.ctrl.pulsar(self.cfg.KEY_MODO_NORMAL, 0.75)
+        self.ctrl.pulsar(self.cfg.KEY_BUSCAR, 0.75)
 
         print("☁️ Esperando nubes (Dinámico)...")
         encontrado = self.vision.esperar_fin_nubes()
@@ -156,7 +156,7 @@ class FarmingBot:
         print("💰 Leyendo Almacenes (OCR Real)...")
         # Intentamos mejorar en bucle mientras sobre dinero
         # Máximo 10 intentos por seguridad para no atascarse
-        for intento in range():
+        for intento in range(5):
             # 1. LEER RECURSOS (Lectura real cada vez)
             oro, elixir = self.vision.leer_recursos()
             print(f"   [Intento {intento + 1}] Oro: {oro:,} | Elixir: {elixir:,}")
@@ -170,7 +170,7 @@ class FarmingBot:
             # 3. BUSCAR MURO (Del nivel más bajo)
             muro_encontrado = None
             for nombre_muro in self.cfg.LISTA_MUROS:
-                pos = self.vision.buscar_imagen(nombre_muro, confianza=0.65)
+                pos = self.vision.buscar_imagen(nombre_muro, confianza=0.8)
                 if pos:
                     print(f"   --> Muro detectado: {nombre_muro}")
                     muro_encontrado = pos
@@ -188,7 +188,7 @@ class FarmingBot:
             # C) Clic 6 x15 veces (Expandir selección)
             # Usamos 0.08 como pediste para seguridad, pero rápido
             for _ in range(15):
-                self.ctrl.pulsar(self.cfg.KEY_VOLVER, espera=0.05)
+                self.ctrl.pulsar(self.cfg.KEY_VOLVER, espera=0.08)
                 # D) Elegir recurso (7 u 8)
             if gastar_elixir:
                 self.ctrl.pulsar(self.cfg.KEY_MEJORAR_ELIXIR, espera=0.2)  # Tecla 8
@@ -208,10 +208,10 @@ class FarmingBot:
             else:
                 print("   --> ⚠️ Los recursos NO bajaron. ¿Fallo al clicar o sin constructor?")
                 # Clic neutro para deseleccionar por si acaso
-                self.ctrl.pulsar(self.cfg.KEY_UNZOOM, 0.1)
+                self.ctrl.pulsar(self.cfg.KEY_UNZOOM, 0.08)
                 # Si falla una vez, reintentamos en el siguiente loop.
                 # Si falla mucho, el bucle 'for' acabará en 10 intentos y saldrá.
-            time.sleep(0.5)  # Respirar antes del siguiente muro
+            time.sleep(0.08)  # Respirar antes del siguiente muro
 
     def ejecutar_ciclo(self):
         print("🚀 BOT CUADRADO V2 INICIADO.")
@@ -229,7 +229,7 @@ class FarmingBot:
                 self.desplegar_ejercito()
                 self.terminar_y_volver()
                 print("🔄 ...")
-                time.sleep(1)
+                time.sleep(3)
             except KeyboardInterrupt:
                 break
             except Exception as e:
