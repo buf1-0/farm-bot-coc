@@ -149,24 +149,26 @@ class FarmingBot:
         print("🏠 Casa (Directo)...")
         self.ctrl.pulsar(self.cfg.KEY_VOLVER, 1.0)
 
-    # --- LÓGICA DE MUROS: MACRO RÁPIDO ---
+    # --- LÓGICA DE MUROS DEFINITIVA ---
     def gestionar_muros(self):
         if not self.cfg.AUTO_UPGRADE_WALLS:
             return
-        print("💰 Comprobando almacenes (OCR)...")
-        oro, elixir = self.vision.leer_recursos()
-        print(f"   Oro: {oro:,} | Elixir: {elixir:,}")
-        sobra_oro = oro >= self.cfg.MIN_ORO_PARA_MUROS
-        sobra_elixir = elixir >= self.cfg.MIN_ELIXIR_PARA_MUROS
-        if not sobra_oro and not sobra_elixir:
-            print("   --> No hay suficiente pasta. A farmear.")
-            return
-        print("🧱 Buscando muros (Macro: Muro -> 6(x16) -> 7 -> 5)...")
-        intentos = 0
-        # Mientras tengamos recursos y no hayamos probado demasiadas veces
-        while (sobra_oro or sobra_elixir) and intentos < 8:
+        print("💰 Leyendo Almacenes (OCR Real)...")
+        # Intentamos mejorar en bucle mientras sobre dinero
+        # Máximo 10 intentos por seguridad para no atascarse
+        for intento in range():
+            # 1. LEER RECURSOS (Lectura real cada vez)
+            oro, elixir = self.vision.leer_recursos()
+            print(f"   [Intento {intento + 1}] Oro: {oro:,} | Elixir: {elixir:,}")
+            # 2. DECIDIR QUÉ GASTAR (Prioridad)
+            # ¿Ambos llenos? Priorizamos Elixir (ejemplo), en la siguiente vuelta gastará Oro
+            gastar_elixir = elixir >= self.cfg.LIMITE_ELIXIR
+            gastar_oro = oro >= self.cfg.LIMITE_ORO
+            if not gastar_elixir and not gastar_oro:
+                print("   --> 📉 Recursos bajo límite. Paramos muros.")
+                break  # Salimos del bucle, nos vamos a atacar
+            # 3. BUSCAR MURO (Del nivel más bajo)
             muro_encontrado = None
-            # Buscar muro de la lista
             for nombre_muro in self.cfg.LISTA_MUROS:
                 pos = self.vision.buscar_imagen(nombre_muro, confianza=0.65)
                 if pos:
@@ -174,36 +176,42 @@ class FarmingBot:
                     muro_encontrado = pos
                     break
             if not muro_encontrado:
-                print("   --> No veo muros mejorables.")
+                print("   --> ✅ No quedan muros de estos niveles en pantalla.")
                 break
-            # --- TU SECUENCIA DE COMBO ---
-            # 1. Clic Muro
+            # 4. EJECUTAR SECUENCIA EXACTA
+            print(f"   --> Ejecutando mejora ({'ELIXIR' if gastar_elixir else 'ORO'})...")
+            # A) Clic Muro
             self.ctrl.clic_en_punto(muro_encontrado)
             time.sleep(0.1)
-            # 2. Clic 6 (Seleccionar Fila)
-            self.ctrl.pulsar('6', espera=0.05)
-            # 3. Clic 6 x15 veces (Spam para seleccionar toda la fila)
-            # Esto es lo que pediste: spamear la tecla 6
+            # B) Clic 6 (Seleccionar Fila)
+            self.ctrl.pulsar(self.cfg.KEY_VOLVER, espera=0.08)  # La tecla 6
+            # C) Clic 6 x15 veces (Expandir selección)
+            # Usamos 0.08 como pediste para seguridad, pero rápido
             for _ in range(15):
-                self.ctrl.pulsar('6', espera=0.02)  # Muy rápido
-            # 4. Clic 7 (Botón Mejorar)
-            self.ctrl.pulsar('7', espera=0.1)
-            # 5. Clic 5 (Confirmar con recurso)
-            # Aquí asumimos que el botón '5' cae encima del Oro o Elixir
-            self.ctrl.pulsar('5', espera=0.2)
-            print("   --> ¡Combo ejecutado! 🧱💥")
-            # Actualizamos recursos "a ojo"
-            # Restamos 1 millón (ajusta esto al coste real de tus muros)
-            if sobra_elixir:
-                elixir -= 1000000
-                if elixir < self.cfg.MIN_ELIXIR_PARA_MUROS: sobra_elixir = False
-            elif sobra_oro:
-                oro -= 1000000
-                if oro < self.cfg.MIN_ORO_PARA_MUROS: sobra_oro = False
-            # Clic neutro para limpiar selección
-            self.ctrl.pulsar(self.cfg.KEY_UNZOOM, 0.1)
-            intentos += 1
-            time.sleep(0.5)  # Esperar animación
+                self.ctrl.pulsar(self.cfg.KEY_VOLVER, espera=0.05)
+                # D) Elegir recurso (7 u 8)
+            if gastar_elixir:
+                self.ctrl.pulsar(self.cfg.KEY_MEJORAR_ELIXIR, espera=0.2)  # Tecla 8
+            elif gastar_oro:
+                self.ctrl.pulsar(self.cfg.KEY_MEJORAR_ORO, espera=0.2)  # Tecla 7
+            # E) Clic 5 (Confirmar pago)
+            self.ctrl.pulsar(self.cfg.KEY_CONFIRMAR, espera=0.5)  # Tecla 5 (Espera un poco más para la animación)
+            # 5. VERIFICACIÓN (Crucial)
+            # Leemos otra vez para ver si bajó el dinero
+            nuevo_oro, nuevo_elixir = self.vision.leer_recursos()
+            # Chequeo simple: ¿Ha bajado el recurso que queríamos gastar?
+            exito = False
+            if gastar_elixir and nuevo_elixir < elixir: exito = True
+            if gastar_oro and nuevo_oro < oro: exito = True
+            if exito:
+                print("   --> ✅ ¡Mejora confirmada! (Recursos bajaron)")
+            else:
+                print("   --> ⚠️ Los recursos NO bajaron. ¿Fallo al clicar o sin constructor?")
+                # Clic neutro para deseleccionar por si acaso
+                self.ctrl.pulsar(self.cfg.KEY_UNZOOM, 0.1)
+                # Si falla una vez, reintentamos en el siguiente loop.
+                # Si falla mucho, el bucle 'for' acabará en 10 intentos y saldrá.
+            time.sleep(0.5)  # Respirar antes del siguiente muro
 
     def ejecutar_ciclo(self):
         print("🚀 BOT CUADRADO V2 INICIADO.")

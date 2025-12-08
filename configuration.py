@@ -8,14 +8,14 @@ class Configuration:
     RUTA_IMG: str = 'img/'
 
     # --- ZONA OCR (Porcentaje Batalla) ---
-    REGION_PORCENTAJE: tuple = (1780, 825, 1890, 875)
+    REGION_PORCENTAJE: tuple = (1780, 825, 110, 50)
 
     # --- ZONA OCR (Recursos en la Aldea) ---
-    REGION_ORO: tuple = (1590, 45, 1795, 75)
-    REGION_ELIXIR: tuple = (1595, 145, 1802, 180)
+    REGION_ORO: tuple = (1590, 45, 205, 30)
+    REGION_ELIXIR: tuple = (1595, 145, 207, 30)
 
     # Cantidad mínima para empezar a gastar en muros
-    LIMITE_ORO: int = 20000000
+    LIMITE_ORO: int = 18000000
     LIMITE_ELIXIR: int = 20000000
 
     # --- Tiempos ---
@@ -27,7 +27,7 @@ class Configuration:
     NUM_HEROES: int = 4
     X_SIEGE_MACHINE: bool = True
 
-    AUTO_UPGRADE_WALLS: bool = False  # Necesitas constructor libre
+    AUTO_UPGRADE_WALLS: bool = True  # Necesitas constructor libre
 
     # --- Teclas Fijas ---
     KEY_ATACAR: str = '1'
@@ -41,7 +41,8 @@ class Configuration:
     KEY_TROPAS: str = 'a'
 
     # --- NUEVA TECLA PARA MUROS ---
-    KEY_MEJORAR_MURO: str = '7'  # La tecla nueva
+    KEY_MEJORAR_ORO: str = '7'
+    KEY_MEJORAR_ELIXIR: str = '8'
 
     # --- LISTA DE MUROS (Fotos tomadas con ZOOM ALEJADO) ---
     LISTA_MUROS: List[str] = field(default_factory=lambda: [
