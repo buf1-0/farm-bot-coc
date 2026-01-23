@@ -12,22 +12,24 @@ class Configuration:
 
     # --- ZONA OCR (Recursos en la Aldea) ---
     REGION_ORO: tuple = (1590, 45, 220, 30)
-    REGION_ELIXIR: tuple = (1595, 145, 220, 30)
+    REGION_ELIXIR: tuple = (1595, 145, 220, 35)
 
     # Cantidad mínima para empezar a gastar en muros
-    LIMITE_ORO: int = 18000000
-    LIMITE_ELIXIR: int = 18000000
+    LIMITE_ORO: int = 26000000
+    LIMITE_ELIXIR: int = 26000000
+
+    LIMITE_REALISTA: int = 29000000 #
 
     # --- Tiempos ---
-    TIEMPO_BATALLA: int = 30
+    TIEMPO_BATALLA: int = 20
 
     # --- OPCIONES ---
-    NUM_TROPAS: int = 40
+    NUM_TROPAS: int = 42
     NUM_HECHIZOS: int = 11
     NUM_HEROES: int = 4
     X_SIEGE_MACHINE: bool = True
 
-    AUTO_UPGRADE_WALLS: bool = True  # Necesitas constructor libre
+    AUTO_UPGRADE_WALLS: bool = False  # Necesitas constructor libre
 
     # --- Teclas Fijas ---
     KEY_ATACAR: str = '1'
@@ -47,7 +49,7 @@ class Configuration:
     # --- LISTA DE MUROS (Fotos tomadas con ZOOM ALEJADO) ---
     LISTA_MUROS: List[str] = field(default_factory=lambda: [
         'muro_13.png', 'muro_14.png', 'muro_15.png',
-        'muro_16.png', 'muro_17.png', 'muro_18.png'
+        'muro_16.png', 'muro_17.png'#, 'muro_18.png'
     ])
 
     # --- Teclas Variables ---

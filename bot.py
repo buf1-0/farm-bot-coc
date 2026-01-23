@@ -15,9 +15,9 @@ class FarmingBot:
 
     def buscar_batalla(self):
         print("\n🔎 Buscando...")
-        self.ctrl.pulsar(self.cfg.KEY_ATACAR, 0.75)
-        self.ctrl.pulsar(self.cfg.KEY_MODO_NORMAL, 0.75)
-        self.ctrl.pulsar(self.cfg.KEY_BUSCAR, 0.75)
+        self.ctrl.pulsar(self.cfg.KEY_ATACAR, 1)
+        self.ctrl.pulsar(self.cfg.KEY_MODO_NORMAL, 1)
+        self.ctrl.pulsar(self.cfg.KEY_BUSCAR, 1)
 
         print("☁️ Esperando nubes (Dinámico)...")
         encontrado = self.vision.esperar_fin_nubes()
@@ -28,7 +28,7 @@ class FarmingBot:
         # ==========================================
         print(f"🔬 Unzooming (F3 x5)...")
         for _ in range(5):
-            self.ctrl.pulsar(self.cfg.KEY_UNZOOM, 0.08)
+            self.ctrl.pulsar(self.cfg.KEY_UNZOOM, 0.2)
 
         # Mueve la camara hacia abajo
         self.ctrl.mover_camara_sur()
@@ -137,8 +137,8 @@ class FarmingBot:
             time.sleep(0.5)
 
     def rendirse(self):
-        self.ctrl.pulsar(self.cfg.KEY_RENDIRSE, 0.5)
-        self.ctrl.pulsar(self.cfg.KEY_CONFIRMAR, 0.5)
+        self.ctrl.pulsar(self.cfg.KEY_RENDIRSE, 1)
+        self.ctrl.pulsar(self.cfg.KEY_CONFIRMAR, 1)
         self.volver_casa()
 
     def volver_casa(self):
@@ -200,7 +200,7 @@ class FarmingBot:
                 self.ctrl.pulsar(self.cfg.KEY_MEJORAR_ORO, espera=0.2)
 
             # Confirmar (5)
-            self.ctrl.pulsar(self.cfg.KEY_CONFIRMAR, espera=2)
+            self.ctrl.pulsar(self.cfg.KEY_CONFIRMAR, espera=1.5)
 
             # VERIFICACIÓN
             nuevo_oro, nuevo_elixir = self.vision.leer_recursos()

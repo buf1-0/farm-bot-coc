@@ -26,14 +26,14 @@ class EmulatorController:
         print("🎥 Bajando cámara (Abajo-Izq)...")
         for _ in range(5):
             pyautogui.scroll(-1000)
-            time.sleep(0.1)
+            time.sleep(0.2)
         time.sleep(0.5)
 
     def mover_camara_norte(self):
         print("🎥 Subiendo cámara (Arriba-Izq)...")
         for _ in range(5):
             pyautogui.scroll(+1000)
-            time.sleep(0.1)
+            time.sleep(0.2)
         time.sleep(0.5)
 
     # --- NUEVO: Para tirar héroes en un punto fijo ---
