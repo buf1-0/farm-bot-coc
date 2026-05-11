@@ -24,17 +24,15 @@ class EmulatorController:
 
     def mover_camara_sur(self):
         print("🎥 Bajando cámara (Abajo-Izq)...")
-        for _ in range(5):
+        for _ in range(3):
             pyautogui.scroll(-1000)
-            time.sleep(0.2)
-        time.sleep(0.5)
+            time.sleep(0.1)
 
     def mover_camara_norte(self):
         print("🎥 Subiendo cámara (Arriba-Izq)...")
-        for _ in range(5):
+        for _ in range(3):
             pyautogui.scroll(+1000)
-            time.sleep(0.2)
-        time.sleep(0.5)
+            time.sleep(0.1)
 
     # --- NUEVO: Para tirar héroes en un punto fijo ---
     def clic_en_punto(self, punto):
@@ -42,7 +40,7 @@ class EmulatorController:
         x = int(punto[0] + random.randint(-noise, noise))
         y = int(punto[1] + random.randint(-noise, noise))
         pyautogui.click(x, y)
-        time.sleep(random.uniform(0.02, 0.05))
+        time.sleep(random.uniform(0.005, 0.015))
 
     # --- DIBUJO DE LÍNEAS ---
     def clic_en_linea(self, p1, p2):
@@ -55,7 +53,7 @@ class EmulatorController:
         y = int(target_y + random.randint(-noise, noise))
 
         pyautogui.click(x, y)
-        time.sleep(random.uniform(0.02, 0.05))
+        time.sleep(random.uniform(0.005, 0.015))
 
     # --- ATAQUES FASE 1 (CÁMARA ABAJO) ---
     def lado_abajo_izq(self):
@@ -76,4 +74,4 @@ class EmulatorController:
         x = int(960 + random.randint(-150, 150))
         y = int(540 + random.randint(-150, 150))
         pyautogui.click(x, y)
-        time.sleep(0.08)
+        time.sleep(0.01)

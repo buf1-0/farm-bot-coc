@@ -27,8 +27,8 @@ class FarmingBot:
         # FASE 0: PREPARACIÓN Y ZOOM OUT (NUEVO)
         # ==========================================
         print(f"🔬 Unzooming (F3 x5)...")
-        for _ in range(5):
-            self.ctrl.pulsar(self.cfg.KEY_UNZOOM, 0.2)
+        for _ in range(3):
+            self.ctrl.pulsar(self.cfg.KEY_UNZOOM)
 
         # Mueve la camara hacia abajo
         self.ctrl.mover_camara_sur()
@@ -49,7 +49,7 @@ class FarmingBot:
         if heroes_activos:
             print(f"🤴 Tirando {len(heroes_activos)} Héroes abajo...")
             for heroe in self.cfg.KEYS_HEROES:
-                self.ctrl.pulsar(heroe, 0.08)
+                self.ctrl.pulsar(heroe)
                 # Usamos la coordenada exacta de la esquina de abajo
                 self.ctrl.clic_en_punto(self.ctrl.cam_low_abajo)
         else:
@@ -57,16 +57,16 @@ class FarmingBot:
 
         # 2. Valquirias Sur
         self.ctrl.pulsar(self.cfg.KEY_TROPAS)
-        time.sleep(0.08)
+        time.sleep(0.05)
 
         # Lado Izq-Abajo
         for _ in range(tropas_lado):
             self.ctrl.lado_abajo_izq()
-            time.sleep(0.08)
+            time.sleep(0.05)
         # Lado Abajo-Der
         for _ in range(tropas_lado):
             self.ctrl.lado_abajo_der()
-            time.sleep(0.08)
+            time.sleep(0.05)
 
         # ==========================================
         # FASE 2: NORTE (Cámara Arriba)
@@ -77,34 +77,31 @@ class FarmingBot:
         if self.cfg.X_SIEGE_MACHINE and self.cfg.KEY_SIEGE_MACHINE:
             print(f"🚜 Tirando Máquina de Asedio ({self.cfg.KEY_SIEGE_MACHINE})...")
             self.ctrl.pulsar(self.cfg.KEY_SIEGE_MACHINE)
-            time.sleep(0.08)
+            time.sleep(0.05)
             self.ctrl.clic_en_punto(self.ctrl.cam_high_arriba)
 
         # Volver a pulsar la tecla de tropa tras mover cámara
         self.ctrl.pulsar(self.cfg.KEY_TROPAS)
-        time.sleep(0.08)
+        time.sleep(0.05)
 
         # Lado Izq-Arriba
         for _ in range(tropas_lado):
             self.ctrl.lado_arriba_izq()
-            time.sleep(0.08)
+            time.sleep(0.05)
 
         # Lado Arriba-Der (y el resto)
         resto = tropas_total - (tropas_lado * 3)
         for _ in range(resto):
             self.ctrl.lado_arriba_der()
-            time.sleep(0.08)
+            time.sleep(0.05)
 
         # ==========================================
         # FASE 3: REMATE
         # ==========================================
         print("✨ Hechizos...")
         self.ctrl.pulsar(self.cfg.KEY_HECHIZOS)
-        time.sleep(0.08)
+        time.sleep(0.05)
         for _ in range(self.cfg.NUM_HECHIZOS): self.ctrl.clic_camino_al_centro()
-
-        print("⚡ Habilidades...")
-        for k in self.cfg.KEYS_HEROES: self.ctrl.pulsar(k, espera=0.08)
 
     def terminar_y_volver(self):
         print(f"👀 VIGILANDO...")
