@@ -103,6 +103,9 @@ class FarmingBot:
         time.sleep(0.05)
         for _ in range(self.cfg.NUM_HECHIZOS): self.ctrl.clic_camino_al_centro()
 
+        print("⚡ Habilidades...")
+        for k in self.cfg.KEYS_HEROES: self.ctrl.pulsar(k)
+
     def terminar_y_volver(self):
         print(f"👀 VIGILANDO...")
         start = time.time()
