@@ -209,6 +209,9 @@ class FarmingBot:
 
             time.sleep(0.08)
 
+    def esperarmenu(self):
+        time.sleep(3)
+
     def ejecutar_ciclo(self):
         print("🚀 BOT CUADRADO V2 INICIADO.")
         print("Maximiza MEmu. 10 segundos.")
@@ -225,7 +228,7 @@ class FarmingBot:
                 self.desplegar_ejercito()
                 self.terminar_y_volver()
                 print("🔄 ...")
-                time.sleep(3)
+                self.esperarmenu()
             except pyautogui.FailSafeException:
                 raise
             except KeyboardInterrupt:
