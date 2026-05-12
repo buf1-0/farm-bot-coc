@@ -55,52 +55,49 @@ class VisionEngine:
         return oro, elixir
 
     def _ocr_recurso(self, region):
-        # LÓGICA DE BLOQUES DE 3 (BUCLE INFINITO)
-        # No saldrá de aquí hasta leer un número menor de 30M.
-        # LIMITE_REALISTA = 30000000
+        MAX_INTENTOS = 5  # Seguro de vida antibloqueos
 
-        while True:
-            # 1. HACEMOS 3 LECTURAS
+        for intento in range(MAX_INTENTOS):
             bloque_lecturas = []
             for _ in range(3):
                 val = self._procesar_imagen_ocr(region)
-                if val > 0:
+
+                # Solo guardamos el valor si tiene sentido (mayor que 0 y menor que tu límite)
+                if 0 < val < self.cfg.LIMITE_REALISTA:
                     bloque_lecturas.append(val)
                 time.sleep(0.05)
 
-                # Si no hemos leído nada válido (>0) en este bloque, repetimos
             if not bloque_lecturas:
                 continue
 
-            # 2. ELEGIMOS EL VALOR MÁS SEGURO (El mínimo)
-            mejor_valor = min(bloque_lecturas)
+            # Nos quedamos con el valor máximo para evitar cuando el OCR se "come" algún número
+            mejor_valor = max(bloque_lecturas)
+            return mejor_valor
 
-            # 3. VERIFICAMOS SI ES MENOR QUE X
-            if mejor_valor < self.cfg.LIMITE_REALISTA:
-                # ¡Es válido! Devolvemos este valor y salimos.
-                return mejor_valor
-            else:
-                # Si sigue siendo mayor que 30M (lectura errónea gigante),
-                # el bucle 'while True' volverá a empezar.
-                pass
+        # Si después de 5 intentos el OCR no ha sido capaz de leer nada lógico,
+        # devolvemos 0. Así el bot se irá a atacar en vez de dar error.
+        return 0
 
     def _procesar_imagen_ocr(self, region):
         try:
+            # 1. Captura
             img = pyautogui.screenshot(region=region)
             img_np = np.array(img)
 
-            hsv = cv2.cvtColor(img_np, cv2.COLOR_RGB2HSV)
+            # 2. LA CLAVE MÁGICA: Hacer la imagen gigante (x4) ANTES de cualquier filtro
+            img_grande = cv2.resize(img_np, None, fx=4, fy=4, interpolation=cv2.INTER_CUBIC)
+
+            # 3. Filtro de Blanco (HSV)
+            hsv = cv2.cvtColor(img_grande, cv2.COLOR_RGB2HSV)
             lower_white = np.array([0, 0, 180])
             upper_white = np.array([180, 15, 255])
-
             mask = cv2.inRange(hsv, lower_white, upper_white)
-            kernel = np.ones((2, 2), np.uint8)
-            mask_clean = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
 
-            mask_inv = cv2.bitwise_not(mask_clean)
-            img_final = cv2.resize(mask_inv, None, fx=3, fy=3, interpolation=cv2.INTER_LINEAR)
-            img_final = cv2.copyMakeBorder(img_final, 10, 10, 10, 10, cv2.BORDER_CONSTANT, value=255)
+            # 4. Invertir y poner un buen borde (Sin filtros que rompan los números)
+            mask_inv = cv2.bitwise_not(mask)
+            img_final = cv2.copyMakeBorder(mask_inv, 20, 20, 20, 20, cv2.BORDER_CONSTANT, value=255)
 
+            # 5. Lectura OCR
             config = '--psm 7 -c tessedit_char_whitelist=0123456789'
             texto = pytesseract.image_to_string(img_final, config=config)
 

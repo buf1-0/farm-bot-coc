@@ -11,8 +11,8 @@ class Configuration:
     REGION_PORCENTAJE: tuple = (1780, 825, 110, 50)
 
     # --- ZONA OCR (Recursos en la Aldea) ---
-    REGION_ORO: tuple = (1590, 45, 220, 30)
-    REGION_ELIXIR: tuple = (1595, 145, 220, 35)
+    REGION_ORO: tuple = (1585, 45, 230, 35)
+    REGION_ELIXIR: tuple = (1590, 145, 230, 35)
 
     # Cantidad mínima para empezar a gastar en muros
     LIMITE_ORO: int = 28000000
@@ -48,8 +48,9 @@ class Configuration:
 
     # --- LISTA DE MUROS (Fotos tomadas con ZOOM ALEJADO) ---
     LISTA_MUROS: List[str] = field(default_factory=lambda: [
-        'muro_13.png', 'muro_14.png', 'muro_15.png',
-        'muro_16.png', 'muro_17.png'#, 'muro_18.png'
+        'muro_14.png', 'muro_15.png',
+        'muro_16.png', 'muro_17.png',
+        #'muro_18.png', #'muro_19.png',
     ])
 
     # --- Teclas Variables ---
