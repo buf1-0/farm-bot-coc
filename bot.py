@@ -180,7 +180,7 @@ class FarmingBot:
             self.ctrl.pulsar(self.cfg.KEY_VOLVER, espera=0.08)
 
             # Clic 6 x15 (Expandir)
-            for _ in range(15):
+            for _ in range(10):
                 self.ctrl.pulsar(self.cfg.KEY_VOLVER, espera=0.08)
 
             # Elegir recurso (7 u 8)
