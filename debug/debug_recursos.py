@@ -8,7 +8,6 @@ from configuration import Configuration
 cfg = Configuration()
 pytesseract.pytesseract.tesseract_cmd = cfg.RUTA_TESSERACT
 
-
 def debug_ocr_guardar(nombre, region):
     print(f"\n--- Analizando {nombre} ---")
     try:

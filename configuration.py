@@ -29,7 +29,7 @@ class Configuration:
     NUM_HEROES: int = 4
     X_SIEGE_MACHINE: bool = True
 
-    AUTO_UPGRADE_WALLS: bool = False  # Necesitas constructor libre
+    AUTO_UPGRADE_WALLS: bool = True  # Necesitas constructor libre
 
     # --- Teclas Fijas ---
     KEY_ATACAR: str = '1'
@@ -48,9 +48,10 @@ class Configuration:
 
     # --- LISTA DE MUROS (Fotos tomadas con ZOOM ALEJADO) ---
     LISTA_MUROS: List[str] = field(default_factory=lambda: [
+        'muro_12.png', 'muro_13.png',
         'muro_14.png', 'muro_15.png',
         'muro_16.png', 'muro_17.png',
-        #'muro_18.png', #'muro_19.png',
+        'muro_18.png', #'muro_19.png',
     ])
 
     # --- Teclas Variables ---
