@@ -15,8 +15,8 @@ class Configuration:
     REGION_ELIXIR: tuple = (1595, 145, 220, 35)
 
     # Cantidad mínima para empezar a gastar en muros
-    LIMITE_ORO: int = 26000000
-    LIMITE_ELIXIR: int = 26000000
+    LIMITE_ORO: int = 28000000
+    LIMITE_ELIXIR: int = 28000000
 
     LIMITE_REALISTA: int = 29000000 #
 
