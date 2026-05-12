@@ -144,7 +144,6 @@ class FarmingBot:
             return
 
         print("💰 Leyendo Almacenes (OCR Real)...")
-
         contador_muros = 0
 
         while True:
@@ -158,22 +157,28 @@ class FarmingBot:
                 print("   --> 📉 Recursos bajo límite. A atacar.")
                 break
 
-            muro_encontrado = None
-            for nombre_muro in self.cfg.LISTA_MUROS:
-                pos = self.vision.buscar_imagen(nombre_muro, confianza=0.8)
-                if pos:
-                    print(f"   --> Muro detectado: {nombre_muro}")
-                    muro_encontrado = pos
-                    break
+            # ---------------- NUEVO BLOQUE IA ----------------
+            print("   🔍 Alejando cámara para la IA...")
+            for _ in range(3):
+                self.ctrl.pulsar(self.cfg.KEY_UNZOOM)
+            time.sleep(0.5)
 
-            if not muro_encontrado:
-                print("   --> ✅ No quedan muros visibles.")
+            print("   🤖 Escaneando muros con Inteligencia Artificial...")
+            muros_encontrados = self.vision.buscar_muros_ia(confianza=0.05)
+
+            if not muros_encontrados:
+                print("   --> ✅ La IA no ve más muros disponibles.")
                 break
+
+            # Cogemos el primer muro que haya visto la IA
+            muro_target = muros_encontrados[0]
+            print(f"   --> 🎯 ¡Objetivo fijado por IA en {muro_target}!")
+            # -------------------------------------------------
 
             print(f"   --> Ejecutando mejora ({'ELIXIR' if gastar_elixir else 'ORO'})...")
 
             # Clic Muro
-            self.ctrl.clic_en_punto(muro_encontrado)
+            self.ctrl.clic_en_punto(muro_target)
             time.sleep(0.1)
 
             # Clic 6 (Seleccionar Fila)
