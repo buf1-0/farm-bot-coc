@@ -1,5 +1,7 @@
 import time
+
 import pyautogui
+
 pyautogui.FAILSAFE = True
 
 from configuration import Configuration
@@ -143,13 +145,11 @@ class FarmingBot:
         if not self.cfg.AUTO_UPGRADE_WALLS:
             return
 
-        print("💰 Leyendo Almacenes (OCR Real)...")
+        print("💰 Leyendo recursos y escaneando muros...")
         contador_muros = 0
 
         while True:
             oro, elixir = self.vision.leer_recursos()
-            print(f"   [Muro #{contador_muros + 1}] Oro: {oro:,} | Elixir: {elixir:,}")
-
             gastar_elixir = elixir >= self.cfg.LIMITE_ELIXIR
             gastar_oro = oro >= self.cfg.LIMITE_ORO
 
@@ -157,59 +157,59 @@ class FarmingBot:
                 print("   --> 📉 Recursos bajo límite. A atacar.")
                 break
 
-            # ---------------- NUEVO BLOQUE IA ----------------
-            print("   🔍 Alejando cámara para la IA...")
+            # Alejamos cámara para que el detector tenga más tiles visibles
+            print("   🔍 Alejando cámara...")
             for _ in range(3):
                 self.ctrl.pulsar(self.cfg.KEY_UNZOOM)
             time.sleep(0.5)
 
-            print("   🤖 Escaneando muros con Inteligencia Artificial...")
-            muros_encontrados = self.vision.buscar_muros_ia(confianza=0.05)
+            print("   🧱 Escaneando muros (HSV)...")
+            # Lista de (centro, nivel) — ya viene ordenada: nivel 12 primero
+            targets = self.vision.buscar_muros(max_targets=10)
 
-            if not muros_encontrados:
-                print("   --> ✅ La IA no ve más muros disponibles.")
+            if not targets:
+                print("   --> ✅ Sin muros detectables. Pasando a atacar.")
                 break
 
-            # Cogemos el primer muro que haya visto la IA
-            muro_target = muros_encontrados[0]
-            print(f"   --> 🎯 ¡Objetivo fijado por IA en {muro_target}!")
-            # -------------------------------------------------
+            muro_target, nivel_detectado = targets[0]
+            print(f"   --> 🎯 Muro L{nivel_detectado} en {muro_target} (prioridad máxima)")
 
-            print(f"   --> Ejecutando mejora ({'ELIXIR' if gastar_elixir else 'ORO'})...")
+            # Decidir recurso: Como los muros 12+ aceptan oro y elixir,
+            # simplemente usamos el recurso que haya superado el límite.
+            # Si sobran los dos, priorizamos gastar Elixir.
 
-            # Clic Muro
+            usar_elixir = gastar_elixir
+            usar_oro = gastar_oro and not usar_elixir
+
+            if not usar_elixir and not usar_oro:
+                print("   --> Recurso disponible no coincide con nivel. Saltando.")
+                break
+
+            print(f"   --> Mejorando con {'ELIXIR' if usar_elixir else 'ORO'}...")
+
             self.ctrl.clic_en_punto(muro_target)
             time.sleep(0.1)
 
-            # Clic 6 (Seleccionar Fila)
-            self.ctrl.pulsar(self.cfg.KEY_VOLVER, espera=0.08)
-
-            # Clic 6 x15 (Expandir)
             for _ in range(10):
                 self.ctrl.pulsar(self.cfg.KEY_VOLVER, espera=0.08)
 
-            # Elegir recurso (7 u 8)
-            if gastar_elixir:
+            if usar_elixir:
                 self.ctrl.pulsar(self.cfg.KEY_MEJORAR_ELIXIR, espera=0.2)
-            elif gastar_oro:
+            else:
                 self.ctrl.pulsar(self.cfg.KEY_MEJORAR_ORO, espera=0.2)
 
-            # Confirmar (5)
             self.ctrl.pulsar(self.cfg.KEY_CONFIRMAR, espera=1.5)
 
-            # VERIFICACIÓN
+            # Verificación
             nuevo_oro, nuevo_elixir = self.vision.leer_recursos()
-
-            exito = False
-            if gastar_elixir and (nuevo_elixir < elixir - 1000): exito = True
-            if gastar_oro and (nuevo_oro < oro - 1000): exito = True
+            exito = (usar_elixir and nuevo_elixir < elixir - 1000) or \
+                    (usar_oro and nuevo_oro < oro - 1000)
 
             if exito:
-                print("   --> ✅ ¡Mejora OK!")
+                print(f"   --> ✅ ¡Muro L{nivel_detectado} mejorado! (#{contador_muros + 1})")
                 contador_muros += 1
             else:
-                print("   --> ❌ ERROR CRÍTICO: El dinero no baja. Parada de seguridad.")
-                print("   --> Deteniendo bot para evitar clics erróneos.")
+                print("   --> ❌ Verificación fallida. Parada de seguridad.")
                 raise pyautogui.FailSafeException("Fallo verificación muros")
 
             time.sleep(0.08)

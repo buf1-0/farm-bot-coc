@@ -1,11 +1,13 @@
-import pyautogui
-import pytesseract
-import cv2
-import numpy as np
 import os
 import time
+
+import cv2
+import numpy as np
+import pyautogui
+import pytesseract
+
 from configuration import Configuration
-from ultralytics import YOLO
+from wall_detector import WallDetector
 
 
 class VisionEngine:
@@ -13,9 +15,9 @@ class VisionEngine:
         pytesseract.pytesseract.tesseract_cmd = config.RUTA_TESSERACT
         self.cfg = config
 
-        # Cargamos el cerebro de la IA
-        print("🧠 Cargando modelo de IA YOLOv8...")
-        self.modelo_muros = YOLO('best.pt')
+        # Detector HSV
+        print("🧱 Cargando WallDetector...")
+        self.wall_detector = WallDetector(config_path='wall_config.json')
 
     def leer_porcentaje(self):
         try:
@@ -121,25 +123,14 @@ class VisionEngine:
         except:
             return None
 
-    def buscar_muros_ia(self, confianza=0.05): # <-- Bajamos la exigencia por defecto
-        img = pyautogui.screenshot()
-        img_np = np.array(img)
-        img_bgr = cv2.cvtColor(img_np, cv2.COLOR_RGB2BGR)
-
-        # La IA escanea la foto
-        resultados = self.modelo_muros(img_bgr, conf=confianza, verbose=False)
-
-        # 📸 MODO RAYOS X: Guarda una foto para que tú veas qué piensa la IA
-        if len(resultados) > 0:
-            resultados[0].save('debug_muros_ia.jpg')
-
-        muros = []
-        for r in resultados:
-            for caja in r.boxes:
-                # Convertimos los valores a lista para evitar fallos de tensores
-                x1, y1, x2, y2 = caja.xyxy[0].tolist()
-                centro_x = int((x1 + x2) / 2)
-                centro_y = int((y1 + y2) / 2)
-                muros.append((centro_x, centro_y))
-
-        return muros
+    def buscar_muros(
+        self,
+        img_bgr=None,
+        max_targets: int = 10
+    ):
+        """
+        Devuelve lista de (centro_xy, nivel) ordenada por nivel ascendente.
+        Compatibilidad: si solo necesitas centros, llama a
+            [t for t, _ in vision.buscar_muros()]
+        """
+        return self.wall_detector.get_upgrade_targets(img_bgr, max_targets)
