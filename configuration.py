@@ -14,6 +14,14 @@ class Configuration:
     REGION_ORO: tuple = (1585, 45, 230, 35)
     REGION_ELIXIR: tuple = (1590, 145, 230, 35)
 
+    # ROI del terreno de juego, en fracción de (ancho, alto) de pantalla.
+    # Ajusta estos valores mirando tu emulador con una regla visual:
+    #   x_min excluye el chat/botones izquierdos
+    #   y_min excluye la barra superior de recursos
+    #   x_max excluye la columna derecha (Tienda, Clan Castle, etc.)
+    #   y_max excluye la barra inferior de tropas
+    GAME_ROI: tuple = (0.02, 0.06, 0.83, 0.87)
+
     # Cantidad mínima para empezar a gastar en muros
     LIMITE_ORO: int = 28000000
     LIMITE_ELIXIR: int = 28000000

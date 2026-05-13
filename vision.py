@@ -17,7 +17,10 @@ class VisionEngine:
 
         # Detector HSV
         print("🧱 Cargando WallDetector...")
-        self.wall_detector = WallDetector(config_path='wall_config.json')
+        self.wall_detector = WallDetector(
+            config_path='wall_config.json',
+            game_roi = config.GAME_ROI
+        )
 
     def leer_porcentaje(self):
         try:

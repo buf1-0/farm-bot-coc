@@ -102,9 +102,33 @@ class WallDetector:
         19: lambda h, s, v: s < 50  and v > 178,
     }
 
-    def __init__(self, config_path: str = 'wall_config.json'):
+    def __init__(self, config_path: str = 'wall_config.json', game_roi: tuple = None):
         self.config_path = config_path
+        self.game_roi = game_roi
         self.hsv_ranges  = self._load_config()
+
+    def _mask_roi(self, img_bgr: np.ndarray) -> np.ndarray:
+        """
+        Pone a negro todo lo que está fuera del área de juego definida
+        como fracción del tamaño de la imagen.
+
+        Esto elimina elementos de UI (Tienda, Chat, Recursos) antes de que
+        entren al pipeline HSV, evitando falsos positivos en su raíz.
+        """
+        if self.game_roi is None:
+            return img_bgr
+
+        h, w = img_bgr.shape[:2]
+        x0, y0, x1, y1 = self.game_roi
+        px0, py0 = int(x0 * w), int(y0 * h)
+        px1, py1 = int(x1 * w), int(y1 * h)
+
+        masked = img_bgr.copy()
+        masked[:py0, :] = 0  # banda superior (recursos)
+        masked[py1:, :] = 0  # banda inferior (tropas / menú)
+        masked[:, :px0] = 0  # banda izquierda (chat)
+        masked[:, px1:] = 0  # banda derecha (Tienda, iconos)
+        return masked
 
     # ---------------------------------------------------------------
     # Config
@@ -263,11 +287,7 @@ class WallDetector:
 
         return blobs
 
-    def detect(
-        self,
-        img_bgr: Optional[np.ndarray] = None,
-        levels:  Optional[List[int]]  = None,
-    ) -> List[WallDetection]:
+    def detect(self, img_bgr: Optional[np.ndarray] = None, levels:  Optional[List[int]]  = None, ) -> List[WallDetection]:
         """
         Pipeline completo: captura → máscara por nivel → triple filtro.
 
@@ -284,6 +304,7 @@ class WallDetector:
                 np.array(pyautogui.screenshot()), cv2.COLOR_RGB2BGR
             )
 
+        img_bgr = self._mask_roi(img_bgr)
         img_hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
         target_levels = levels if levels else list(range(12, 20))
 
