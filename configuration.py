@@ -46,14 +46,6 @@ class Configuration:
     KEY_MEJORAR_ORO: str = '7'
     KEY_MEJORAR_ELIXIR: str = '8'
 
-    # --- LISTA DE MUROS (Fotos tomadas con ZOOM ALEJADO) ---
-    LISTA_MUROS: List[str] = field(default_factory=lambda: [
-        'muro_12.png', 'muro_13.png',
-        'muro_14.png', 'muro_15.png',
-        'muro_16.png', 'muro_17.png',
-        'muro_18.png', #'muro_19.png',
-    ])
-
     # --- Teclas Variables ---
     KEY_SIEGE_MACHINE: str = field(init=False)
     KEY_HECHIZOS: str = field(init=False)
