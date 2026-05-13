@@ -190,7 +190,7 @@ class FarmingBot:
             self.ctrl.clic_en_punto(muro_target)
             time.sleep(0.1)
 
-            for _ in range(10):
+            for _ in range(3): # Nº de muros a mejorar
                 self.ctrl.pulsar(self.cfg.KEY_VOLVER, espera=0.08)
 
             if usar_elixir:
@@ -198,7 +198,7 @@ class FarmingBot:
             else:
                 self.ctrl.pulsar(self.cfg.KEY_MEJORAR_ORO, espera=0.2)
 
-            self.ctrl.pulsar(self.cfg.KEY_CONFIRMAR, espera=1.5)
+            self.ctrl.pulsar(self.cfg.KEY_CONFIRMAR, espera=1)
 
             # Verificación
             nuevo_oro, nuevo_elixir = self.vision.leer_recursos()
@@ -208,6 +208,8 @@ class FarmingBot:
             if exito:
                 print(f"   --> ✅ ¡Muro L{nivel_detectado} mejorado! (#{contador_muros + 1})")
                 contador_muros += 1
+                self.ctrl.clic_en_punto((1840, 500))
+                time.sleep(0.5)
             else:
                 print("   --> ❌ Verificación fallida. Parada de seguridad.")
                 raise pyautogui.FailSafeException("Fallo verificación muros")
@@ -230,6 +232,7 @@ class FarmingBot:
 
                 print(f"--- ATAQUE {self.ataques_totales} ---")
                 self.buscar_batalla()
+                time.sleep(0.5)
                 self.desplegar_ejercito()
                 self.terminar_y_volver()
                 print("🔄 ...")
